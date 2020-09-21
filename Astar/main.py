@@ -1,8 +1,17 @@
+import sys
+import time
+import math
+import random
+from astar_algoritm import robot
+from PyQt5.QtWidgets import (QWidget, QGridLayout,QPushButton, QApplication, QCheckBox, QLabel)
+from PyQt5 import QtCore
 from pyqt_gui import (obstaclesSelectionWindow,obstaclesWindow)
 
 maxRange = 10
 resolution = 10;
 
+
+global path, blocked
 blocked = []
 path = []
 

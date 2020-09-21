@@ -68,7 +68,6 @@ class obstaclesWindow(QWidget):
 				Slabel = QLabel('_')
 				self.obstacle_layout.addWidget(Slabel,x,y)
 				
-
 		self.setWindowTitle('Obstacles Map')
 
 	def update(self):

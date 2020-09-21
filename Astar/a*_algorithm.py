@@ -150,7 +150,7 @@ blocked = [(0,10),
 blocked.extend(borders)
 
 
-''' 
+'''
 	ROBOT SURROUNDINGS CHARACTERISTICS 
 	dist2robot = distance the robot must move to go to the destination
 	x_sign, y_sign = sign of the incremental X or Y to the position of the robot

@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (QWidget, QGridLayout,QPushButton, QApplication, QCheckBox, QLabel)
 from PyQt5 import QtCore
+import time
 
 maxRange = 10
 resolution = 10;
@@ -80,8 +81,10 @@ class obstaclesWindow(QWidget):
 			#self.obstacle_layout.removeWidget(self.obstacle_layout.itemAtPosition(point[0],point[1]).widget());
 			#self.obstacle_layout.addWidget(Xlabel,point[0],point[1])
 
-		for point in path:
-			self.obstacle_layout.itemAtPosition(point[0],point[1]).widget().setText("o")
+		for i,point in enumerate(path):
+			self.obstacle_layout.itemAtPosition(point[0],point[1]).widget().setText(str(i))
+			
+
 
 
 
@@ -93,7 +96,7 @@ if __name__ == '__main__':
 		for y in range(maxRange):
 			if x==y:
 				path.append((x,y))
-	print(path)
+				
 	app = QApplication(sys.argv)
 	window1 = obstaclesSelectionWindow()
 	window1.show()

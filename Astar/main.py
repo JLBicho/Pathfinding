@@ -13,11 +13,11 @@ borders = []
 for i in range(-1,maxRange):
 	borders.append((-resolution, i*resolution))
 for i in range(-1,maxRange):
-	borders.append(((maxRange-1)*resolution, i*resolution))
+	borders.append(((maxRange)*resolution, i*resolution))
 for i in range(-1,maxRange):
 	borders.append((i*resolution, -resolution))
 for i in range(-1,maxRange):
-	borders.append((i*resolution, (maxRange-1)*resolution))
+	borders.append((i*resolution, (maxRange)*resolution))
 
 path = []
 blocked = []
@@ -231,14 +231,23 @@ class obstaclesWindow(QWidget):
 			self.robot = robot(start.toTuple(), 'N')
 				
 
-
+def restrictXY(val, min, max):
+	if val<min:
+		val = min
+	if val>max:
+		val=max
+	return val
 
 if __name__ == '__main__':
 	start_x = int(input("Select start x: "))
 	start_y = int(input("Select start y: "))
+	start_x = restrictXY(start_x,1,maxRange-1)
+	start_y = restrictXY(start_y,1,maxRange-1)
 	start = position((start_x,start_y))
 	end_x = int(input("Select end x: "))
 	end_y = int(input("Select end y: "))
+	end_x = restrictXY(end_x,1,maxRange-1)
+	end_y = restrictXY(end_y,1,maxRange-1)
 	end = position((end_x,end_y))
 	robot1 = robot(start.toTuple(), 'N')
 

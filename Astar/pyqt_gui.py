@@ -4,9 +4,9 @@ from PyQt5 import QtCore
 import time
 
 maxRange = 10
-resolution = 10;
-
+resolution = 1;
 borders = []
+blocked = []
 
 for i in range(-1,maxRange):
 	borders.append((-resolution, i*resolution))
@@ -17,11 +17,10 @@ for i in range(-1,maxRange):
 for i in range(-1,maxRange):
 	borders.append((i*resolution, (maxRange-1)*resolution))
 
-blocked = []
 path = []
 
 class obstaclesSelectionWindow(QWidget):
-	def __init__(self):
+	def __init__(self, maxRange, blocked):
 		super().__init__()
 		self.obstacle_layout = QGridLayout()
 		self.setLayout(self.obstacle_layout)
@@ -32,6 +31,7 @@ class obstaclesSelectionWindow(QWidget):
 		self.boton = QPushButton('Aceptar')
 		self.obstacle_layout.addWidget(self.boton, maxRange+1, maxRange+1)
 		self.boton.clicked.connect(self.confirm)
+		self.blocked = blocked
 
 		for x in range(maxRange):
 			for y in range(maxRange):
@@ -41,20 +41,20 @@ class obstaclesSelectionWindow(QWidget):
 		self.setWindowTitle('Basic Grid Layout')
 
 	def confirm(self):
-		blocked.clear()
+		self.blocked.clear()
 		if not self.boton.isChecked():
 			for x in range(maxRange):
 				for y in range(maxRange):
 					widget = self.obstacle_layout.itemAtPosition(x,y)
 					chckbx = widget.widget()
 					if chckbx.isChecked():
-						blocked.append((x,y))
+						self.blocked.append((x,y))
 		
 			
 			
 
 class obstaclesWindow(QWidget):
-	def __init__(self):
+	def __init__(self,maxRange,path,blocked):
 		super().__init__()
 		self.obstacle_layout = QGridLayout()
 		self.setLayout(self.obstacle_layout)
@@ -62,6 +62,8 @@ class obstaclesWindow(QWidget):
 		self.boton = QPushButton('Actualizar')
 		self.obstacle_layout.addWidget(self.boton, maxRange+1, maxRange+1)
 		self.boton.clicked.connect(self.update)
+		self.path = path
+		self.blocked = blocked
 
 		for x in range(maxRange):
 			for y in range(maxRange):
@@ -75,20 +77,13 @@ class obstaclesWindow(QWidget):
 			for y in range(maxRange):
 				self.obstacle_layout.itemAtPosition(x,y).widget().setText("_")
 
-		for point in blocked:
+		for point in self.blocked:
 			self.obstacle_layout.itemAtPosition(point[0],point[1]).widget().setText("X")
-			#self.obstacle_layout.removeWidget(self.obstacle_layout.itemAtPosition(point[0],point[1]).widget());
-			#self.obstacle_layout.addWidget(Xlabel,point[0],point[1])
 
-		for i,point in enumerate(path):
-			self.obstacle_layout.itemAtPosition(point[0],point[1]).widget().setText(str(i))
+		for i,point in enumerate(self.path):
+			if(self.obstacle_layout.itemAtPosition(point.position.x,point.position.y) is not None):
+				self.obstacle_layout.itemAtPosition(point.position.x,point.position.y).widget().setText(str(i))
 			
-
-
-
-
-		
-
 
 if __name__ == '__main__':
 	for x in range(maxRange):

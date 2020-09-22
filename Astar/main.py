@@ -83,7 +83,7 @@ class robot:
 				penalizacion = self.visited.count(check2)*resolution*5
 			else:
 				penalizacion = 0
-			if check2 not in blocked:
+			if check2 not in blocked and check2 not in borders:
 				around[i] = dist2robot[i%2] + math.sqrt(pow(check.x-goal.x,2)+pow(check.y-goal.y,2)) + penalizacion
 			else:
 				around[i] = float("inf")
@@ -128,13 +128,18 @@ class obstaclesSelectionWindow(QWidget):
 		self.Slabel = QLabel(' ')
 
 		self.boton = QPushButton('Aceptar')
-		self.obstacle_layout.addWidget(self.boton, maxRange+1, maxRange+1)
+		self.obstacle_layout.addWidget(self.boton, maxRange+1 , maxRange+2)
 		self.boton.clicked.connect(self.confirm)
 
 		for x in range(maxRange):
 			for y in range(maxRange):
-				checkBox = QCheckBox()
-				self.obstacle_layout.addWidget(checkBox, x, y)
+				if (x,y) == start.toTuple():
+					self.obstacle_layout.addWidget(QLabel("S"),x,y)
+				elif (x,y) == end.toTuple():
+					self.obstacle_layout.addWidget(QLabel("E"),x,y)
+				else:
+					checkBox = QCheckBox()
+					self.obstacle_layout.addWidget(checkBox, x, y)
 
 		self.setWindowTitle('Select obstacles position')
 
@@ -143,24 +148,30 @@ class obstaclesSelectionWindow(QWidget):
 		if not self.boton.isChecked():
 			for x in range(maxRange):
 				for y in range(maxRange):
-					widget = self.obstacle_layout.itemAtPosition(x,y)
-					chckbx = widget.widget()
-					if chckbx.isChecked():
-						blocked.append((x,y))
+					if (x,y) !=  start.toTuple() and (x,y) != end.toTuple():
+						widget = self.obstacle_layout.itemAtPosition(x,y)
+						chckbx = widget.widget()
+						if chckbx.isChecked():
+							blocked.append((x,y))						
 		
 			
 			
 
 class obstaclesWindow(QWidget):
-	def __init__(self,robot):
+	def __init__(self,robot1):
 		super().__init__()
 		self.obstacle_layout = QGridLayout()
 		self.setLayout(self.obstacle_layout)
 
-		self.boton = QPushButton('Actualizar')
-		self.obstacle_layout.addWidget(self.boton, maxRange+1, maxRange+1)
-		self.boton.clicked.connect(self.update)
-		self.robot = robot
+		self.update_btn = QPushButton('Actualizar')
+		self.obstacle_layout.addWidget(self.update_btn, maxRange+1, maxRange+1)
+		self.update_btn.clicked.connect(self.update)
+
+		self.reset_btn = QPushButton('Reset')
+		self.obstacle_layout.addWidget(self.reset_btn, maxRange+2, maxRange+1)
+		self.reset_btn.clicked.connect(self.reset)
+
+		self.robot = robot1
 
 		for x in range(maxRange):
 			for y in range(maxRange):
@@ -195,16 +206,26 @@ class obstaclesWindow(QWidget):
 			if(self.obstacle_layout.itemAtPosition(point.position.x,point.position.y) is not None):
 				self.obstacle_layout.itemAtPosition(point.position.x,point.position.y).widget().setText(str(i))
 
+	def reset(self):
+		blocked.clear()
+		path.clear()
+		for x in range(maxRange):
+			for y in range(maxRange):
+				self.obstacle_layout.itemAtPosition(x,y).widget().setText("_")
+		self.robot = robot(start.toTuple(), 'N')
+				
+
+
 
 if __name__ == '__main__':
 	start = position((1, 1))
 	end = position((10, 13))
-	robot = robot(start.toTuple(), 'N')
+	robot1 = robot(start.toTuple(), 'N')
 
 	app = QApplication(sys.argv)
 	window1 = obstaclesSelectionWindow()
 	window1.show()
-	window2 = obstaclesWindow(robot)
+	window2 = obstaclesWindow(robot1)
 	window2.show()
 	sys.exit(app.exec_())
 

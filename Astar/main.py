@@ -3,7 +3,7 @@ import time
 import math
 import random
 
-from PyQt5.QtWidgets import (QWidget, QGridLayout,QPushButton, QApplication, QCheckBox, QLabel)
+from PyQt5.QtWidgets import (QWidget, QGridLayout,QPushButton, QApplication, QCheckBox, QLabel,QGroupBox)
 from PyQt5 import QtCore
 
 maxRange = 15
@@ -229,7 +229,107 @@ class obstaclesWindow(QWidget):
 
 		if start is not None:
 			self.robot = robot(start.toTuple(), 'N')
-				
+
+class MainWindow(QWidget):
+	def __init__(self, robot1):
+		super().__init__()
+		self.robot = robot1
+		self.setWindowTitle("Main Window")
+
+		self.group1 = QGroupBox("Selection")
+		self.group2 = QGroupBox("Path")
+
+		self.selectionGridLayout = QGridLayout()
+		self.pathGridLayout = QGridLayout()
+
+		for x in range(maxRange):
+			for y in range(maxRange):
+				if (x,y) == start.toTuple():
+					self.selectionGridLayout.addWidget(QLabel("S"),x,y)
+				elif (x,y) == end.toTuple():
+					self.selectionGridLayout.addWidget(QLabel("E"),x,y)
+				else:
+					checkBox = QCheckBox()
+					self.selectionGridLayout.addWidget(checkBox, x, y)
+				self.pathGridLayout.addWidget(QLabel('_'),x,y)
+		
+		self.group1.setLayout(self.selectionGridLayout)
+		self.group2.setLayout(self.pathGridLayout)
+
+		mainLayout = QGridLayout()
+		mainLayout.addWidget(self.group1, 1, 0)
+		mainLayout.addWidget(self.group2, 1, 1)
+
+		self.update_btn = QPushButton('Actualizar')
+		mainLayout.addWidget(self.update_btn, maxRange, 0)
+		self.update_btn.clicked.connect(self.update)
+
+		self.reset_btn = QPushButton('Reset')
+		mainLayout.addWidget(self.reset_btn, maxRange, 1)
+		self.reset_btn.clicked.connect(self.reset)
+		
+		self.setLayout(mainLayout)
+
+	def update(self):
+		blocked.clear()
+		if not self.update_btn.isChecked():
+			for x in range(maxRange):
+				for y in range(maxRange):
+					self.pathGridLayout.itemAtPosition(x,y).widget().setText("_")
+					if (x,y) !=  start.toTuple() and (x,y) != end.toTuple():
+						widget = self.selectionGridLayout.itemAtPosition(x,y)
+						chckbx = widget.widget()
+						if chckbx.isChecked():
+							blocked.append((x,y))
+
+		path.clear()
+		for point in blocked:
+			self.pathGridLayout.itemAtPosition(point[0],point[1]).widget().setText("X")
+
+		path.append(self.robot.pose.__copy__())
+
+		while 1:
+			self.robot.move(end)
+			if self.robot.pose.position.x == end.x and self.robot.pose.position.y == end.y:
+				break
+			if self.robot.distance > 500:
+				print(" ====== ====== ======")
+				print(" MAX DISTANCE REACHED")
+				print(" ====== ====== ======")
+				break
+
+		print(" ====== ====== ======")
+		print("Distance = " + str(round(self.robot.distance)))
+		'''
+		print("Followed path: ")
+		for p in path:
+			p.print(log=True)
+		'''
+		print(" ====== ====== ======")
+
+		for i,point in enumerate(path):
+			if(self.pathGridLayout.itemAtPosition(point.position.x,point.position.y) is not None):
+				self.pathGridLayout.itemAtPosition(point.position.x,point.position.y).widget().setText(str(i))
+
+		if start is not None:
+			self.robot = robot(start.toTuple(), 'N')
+
+	def reset(self):
+		for x in range(maxRange):
+			for y in range(maxRange):
+				self.selectionGridLayout.itemAtPosition(x,y).widget().deleteLater()
+				self.pathGridLayout.itemAtPosition(x,y).widget().setText("_")
+				if (x,y) == start.toTuple():
+					self.selectionGridLayout.addWidget(QLabel("S"),x,y)
+				elif (x,y) == end.toTuple():
+					self.selectionGridLayout.addWidget(QLabel("E"),x,y)
+				else:
+					checkBox = QCheckBox()
+					self.selectionGridLayout.addWidget(checkBox, x, y)
+
+
+
+			
 
 def restrictXY(val, min, max):
 	if val<min:
@@ -239,6 +339,7 @@ def restrictXY(val, min, max):
 	return val
 
 if __name__ == '__main__':
+	'''
 	start_x = int(input("Select start x: "))
 	start_y = int(input("Select start y: "))
 	start_x = restrictXY(start_x,1,maxRange-1)
@@ -250,12 +351,18 @@ if __name__ == '__main__':
 	end_y = restrictXY(end_y,1,maxRange-1)
 	end = position((end_x,end_y))
 	robot1 = robot(start.toTuple(), 'N')
+	'''
+	start = position((0,0))
+	end = position((maxRange-1,maxRange-1))
+	robot1 = robot(start.toTuple(), 'N')
 
 	app = QApplication(sys.argv)
-	window1 = obstaclesSelectionWindow()
-	window1.show()
-	window2 = obstaclesWindow(robot1)
-	window2.show()
+	mainwindow = MainWindow(robot1)
+	mainwindow.show()
+	#window1 = obstaclesSelectionWindow()
+	#window1.show()
+	#window2 = obstaclesWindow(robot1)
+	#window2.show()
 	sys.exit(app.exec_())
 
 	

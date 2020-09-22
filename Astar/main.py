@@ -240,23 +240,16 @@ class MainWindow(QWidget):
 		self.PathGroup = QGroupBox("Path")
 		self.TopGroup = QGroupBox("Input Data")
 		self.BottomGroup = QGroupBox("Control")
+		self.SubBottomGroup = QGroupBox("Outputs")
 
 		self.selectionGridLayout = QGridLayout()
 		self.pathGridLayout = QGridLayout()
 		self.buttonsLayout = QHBoxLayout()
 		self.topLeftLayout = QHBoxLayout()
-
-		
+		self.outputsLayout = QHBoxLayout()
 
 		for x in range(maxRange):
 			for y in range(maxRange):
-				'''
-				if (x,y) == self.start.toTuple():
-					self.selectionGridLayout.addWidget(QLabel("S"),x,y)
-				elif (x,y) == self.end.toTuple():
-					self.selectionGridLayout.addWidget(QLabel("E"),x,y)
-				else:
-				'''
 				checkBox = QCheckBox()
 				self.selectionGridLayout.addWidget(checkBox, x, y)
 				self.pathGridLayout.addWidget(QLabel('_'),x,y)
@@ -265,14 +258,15 @@ class MainWindow(QWidget):
 		self.PathGroup.setLayout(self.pathGridLayout)
 		self.TopGroup.setLayout(self.topLeftLayout)
 		self.BottomGroup.setLayout(self.buttonsLayout)
+		self.SubBottomGroup.setLayout(self.outputsLayout)
 
 		mainLayout = QGridLayout()
 		mainLayout.addWidget(self.TopGroup, 0, 0, 1, 2)
 		mainLayout.addWidget(self.selectionGroup, 1, 0)
 		mainLayout.addWidget(self.PathGroup, 1, 1)
-		mainLayout.addWidget(self.BottomGroup, 2, 0, 2, 2)
+		mainLayout.addWidget(self.BottomGroup, 2, 0, 1, 2)
+		mainLayout.addWidget(self.SubBottomGroup, 3, 0, 1, 2)
 		
-
 		self.update_btn = QPushButton('Actualizar')
 		self.buttonsLayout.addWidget(self.update_btn)
 		self.update_btn.clicked.connect(self.update)
@@ -303,6 +297,14 @@ class MainWindow(QWidget):
 
 		self.start = None
 		self.end = None
+
+		distanceLabel = QLabel("Distance: ")
+		self.distance = QLineEdit(" ")
+		self.distance.setReadOnly(True)
+		self.distance.setAlignment(QtCore.Qt.AlignCenter)
+		self.outputsLayout.addWidget(distanceLabel)
+		self.outputsLayout.addWidget(self.distance)
+		self.outputsLayout
 
 		self.setLayout(mainLayout)
 
@@ -366,22 +368,26 @@ class MainWindow(QWidget):
 		while 1:
 			self.robot1.move(self.end)
 			if self.robot1.pose.position.x == self.end.x and self.robot1.pose.position.y == self.end.y:
+				self.distance.setText(str(self.robot1.distance))
 				break
 			if self.robot1.distance > 500:
+				self.distance.setText("Max. distance reached: str(self.robot1.distance)")
+				'''
 				print(" ====== ====== ======")
 				print(" MAX DISTANCE REACHED")
 				print(" ====== ====== ======")
+				'''
 				break
-
+		'''
 		print(" ====== ====== ======")
 		print("Distance = " + str(round(self.robot1.distance)))
-		'''
+		
 		print("Followed path: ")
 		for p in path:
 			p.print(log=True)
-		'''
+		
 		print(" ====== ====== ======")
-
+		'''
 		for i,point in enumerate(path):
 			if(self.pathGridLayout.itemAtPosition(point.position.x,point.position.y) is not None):
 				self.pathGridLayout.itemAtPosition(point.position.x,point.position.y).widget().setText(str(i))

@@ -1,12 +1,12 @@
 # Pathfinding
  Pathfinding algorithms
 
-## Djisktra
+## Djisktra
 - main.py: uses SSSP_Djisktra methos to look for shorter path between nodes
 
 
-## AStar
+## AStar
 - main.py: uses PyQt5 to create maps and start-end points
 
-## TO DO:
+## TO DO:
 - Clean 

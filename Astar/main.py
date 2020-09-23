@@ -6,7 +6,7 @@ import random
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QPushButton, QApplication, QCheckBox, QLabel, QGroupBox, QHBoxLayout, QLineEdit)
 from PyQt5 import QtCore
 
-maxRange = 15
+maxRange = 20
 resolution = 1
 borders = []
 
@@ -280,9 +280,9 @@ class MainWindow(QWidget):
 		label_SY = QLabel("Start_Y:")
 		self.input_SY = QLineEdit('0')
 		label_EX = QLabel("End_X:")
-		self.input_EX = QLineEdit('0')
+		self.input_EX = QLineEdit(str(maxRange-1))
 		label_EY = QLabel("End_Y:")
-		self.input_EY = QLineEdit('0')
+		self.input_EY = QLineEdit(str(maxRange-1))
 		self.topLeftLayout.addWidget(label_SX)
 		self.topLeftLayout.addWidget(self.input_SX)
 		self.topLeftLayout.addWidget(label_SY)
@@ -302,8 +302,13 @@ class MainWindow(QWidget):
 		self.distance = QLineEdit(" ")
 		self.distance.setReadOnly(True)
 		self.distance.setAlignment(QtCore.Qt.AlignCenter)
+		maxDistanceLabel = QLabel("Max Distance: ")
+		self.maxDistance = QLineEdit(str(500))
+		self.maxDistance.setAlignment(QtCore.Qt.AlignCenter)
 		self.outputsLayout.addWidget(distanceLabel)
 		self.outputsLayout.addWidget(self.distance)
+		self.outputsLayout.addWidget(maxDistanceLabel)
+		self.outputsLayout.addWidget(self.maxDistance)
 		self.outputsLayout
 
 		self.setLayout(mainLayout)
@@ -370,8 +375,8 @@ class MainWindow(QWidget):
 			if self.robot1.pose.position.x == self.end.x and self.robot1.pose.position.y == self.end.y:
 				self.distance.setText(str(self.robot1.distance))
 				break
-			if self.robot1.distance > 500:
-				self.distance.setText("Max. distance reached: str(self.robot1.distance)")
+			if self.robot1.distance > int(self.maxDistance.text()):
+				self.distance.setText("Max. distance reached: "+ str(self.robot1.distance))
 				'''
 				print(" ====== ====== ======")
 				print(" MAX DISTANCE REACHED")
@@ -434,7 +439,7 @@ if __name__ == '__main__':
 
 	app = QApplication(sys.argv)
 	mainwindow = MainWindow()
-	mainwindow.resize(900, 500)
+	mainwindow.resize(1200, 900)
 	mainwindow.show()
 	#window1 = obstaclesSelectionWindow()
 	#window1.show()

@@ -373,10 +373,12 @@ class MainWindow(QWidget):
 		while 1:
 			self.robot1.move(self.end)
 			if self.robot1.pose.position.x == self.end.x and self.robot1.pose.position.y == self.end.y:
-				self.distance.setText(str(self.robot1.distance))
+				string = "{:.1f}".format(self.robot1.distance)
+				self.distance.setText(string)
 				break
 			if self.robot1.distance > int(self.maxDistance.text()):
-				self.distance.setText("Max. distance reached: "+ str(self.robot1.distance))
+				string = "{:.1f}".format(self.robot1.distance)
+				self.distance.setText("Max. distance reached: "+ string)
 				'''
 				print(" ====== ====== ======")
 				print(" MAX DISTANCE REACHED")
@@ -406,6 +408,8 @@ class MainWindow(QWidget):
 				self.selectionGridLayout.itemAtPosition(x,y).widget().deleteLater()
 				self.pathGridLayout.itemAtPosition(x,y).widget().setText("_")
 				self.selectionGridLayout.addWidget(QCheckBox(), x, y)
+		self.start = None
+		self.end = None
 
 
 

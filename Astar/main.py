@@ -3,25 +3,31 @@ import time
 import math
 import random
 
+import settings
+#settings.init()
+from robot import robot
+from geometry_utils import position, pose
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QPushButton, QApplication, QCheckBox, QLabel, QGroupBox, QHBoxLayout, QLineEdit)
 from PyQt5 import QtCore
 
+'''
 maxRange = 20
 resolution = 1
 borders = []
-
-for i in range(-1,maxRange):
-	borders.append((-resolution, i*resolution))
-for i in range(-1,maxRange):
-	borders.append(((maxRange)*resolution, i*resolution))
-for i in range(-1,maxRange):
-	borders.append((i*resolution, -resolution))
-for i in range(-1,maxRange):
-	borders.append((i*resolution, (maxRange)*resolution))
-
 path = []
 blocked = []
+'''
+for i in range(-1,settings.maxRange):
+	settings.borders.append((-settings.resolution, i*settings.resolution))
+for i in range(-1,settings.maxRange):
+	settings.borders.append(((settings.maxRange)*settings.resolution, i*settings.resolution))
+for i in range(-1,settings.maxRange):
+	settings.borders.append((i*settings.resolution, -settings.resolution))
+for i in range(-1,settings.maxRange):
+	settings.borders.append((i*settings.resolution, (settings.maxRange)*settings.resolution))
 
+
+'''
 class position:
 	def __init__(self,pos):
 		self.x = pos[0]
@@ -117,123 +123,14 @@ class robot:
 		self.visited.append(self.pose.position.toTuple())
 		path.append(self.pose.__copy__())
 		#return(self.pose.__copy__())
+'''
 
-class obstaclesSelectionWindow(QWidget):
-	def __init__(self):
-		super().__init__()
-		self.obstacle_layout = QGridLayout()
-		self.setLayout(self.obstacle_layout)
-
-		self.Xlabel = QLabel('X')
-		self.Slabel = QLabel(' ')
-
-		self.boton = QPushButton('Aceptar')
-		self.obstacle_layout.addWidget(self.boton, maxRange+1 , maxRange+2)
-		self.boton.clicked.connect(self.confirm)
-
-		self.reset_btn = QPushButton('Reset')
-		self.obstacle_layout.addWidget(self.reset_btn, maxRange+2 , maxRange+2)
-		self.reset_btn.clicked.connect(self.reset)
-		
-
-		for x in range(maxRange):
-			for y in range(maxRange):
-				if (x,y) == start.toTuple():
-					self.obstacle_layout.addWidget(QLabel("S"),x,y)
-				elif (x,y) == end.toTuple():
-					self.obstacle_layout.addWidget(QLabel("E"),x,y)
-				else:
-					checkBox = QCheckBox()
-					self.obstacle_layout.addWidget(checkBox, x, y)
-
-		self.setWindowTitle('Select obstacles position')
-
-	def confirm(self):
-		blocked.clear()
-		if not self.boton.isChecked():
-			for x in range(maxRange):
-				for y in range(maxRange):
-					if (x,y) !=  start.toTuple() and (x,y) != end.toTuple():
-						widget = self.obstacle_layout.itemAtPosition(x,y)
-						chckbx = widget.widget()
-						if chckbx.isChecked():
-							blocked.append((x,y))
-		
-	def reset(self):
-		for x in range(maxRange):
-			for y in range(maxRange):
-				#self.obstacle_layout.removeWidget(self.obstacle_layout.itemAtPosition(x,y).widget())
-				self.obstacle_layout.itemAtPosition(x,y).widget().deleteLater()
-				if (x,y) == start.toTuple():
-					self.obstacle_layout.addWidget(QLabel("S"),x,y)
-				elif (x,y) == end.toTuple():
-					self.obstacle_layout.addWidget(QLabel("E"),x,y)
-				else:
-					checkBox = QCheckBox()
-					self.obstacle_layout.addWidget(checkBox, x, y)
-			
-			
-
-class obstaclesWindow(QWidget):
-	def __init__(self,robot1):
-		super().__init__()
-		self.obstacle_layout = QGridLayout()
-		self.setLayout(self.obstacle_layout)
-
-		self.update_btn = QPushButton('Actualizar')
-		self.obstacle_layout.addWidget(self.update_btn, maxRange+1, maxRange+1)
-		self.update_btn.clicked.connect(self.update)
-
-		self.robot = robot1
-
-		for x in range(maxRange):
-			for y in range(maxRange):
-				Slabel = QLabel('_')
-				self.obstacle_layout.addWidget(Slabel,x,y)
-				
-		self.setWindowTitle('Obstacles Map')
-
-	def update(self):
-		path.clear()
-		for x in range(maxRange):
-			for y in range(maxRange):
-				self.obstacle_layout.itemAtPosition(x,y).widget().setText("_")
-
-		for point in blocked:
-			self.obstacle_layout.itemAtPosition(point[0],point[1]).widget().setText("X")
-
-		path.append(self.robot.pose.__copy__())
-
-		while 1:
-			self.robot.move(end)
-			if self.robot.pose.position.x == end.x and self.robot.pose.position.y == end.y:
-				break
-			if self.robot.distance > 500:
-				print(" ====== ====== ======")
-				print(" MAX DISTANCE REACHED")
-				print(" ====== ====== ======")
-				break
-
-		print(" ====== ====== ======")
-		print("Distance = " + str(round(self.robot.distance)))
-		'''
-		print("Followed path: ")
-		for p in path:
-			p.print(log=True)
-		'''
-		print(" ====== ====== ======")
-
-		for i,point in enumerate(path):
-			if(self.obstacle_layout.itemAtPosition(point.position.x,point.position.y) is not None):
-				self.obstacle_layout.itemAtPosition(point.position.x,point.position.y).widget().setText(str(i))
-
-		if start is not None:
-			self.robot = robot(start.toTuple(), 'N')
 
 class MainWindow(QWidget):
 	def __init__(self):
 		super().__init__()
-		#self.robot = robot1
+		
+
 		self.setWindowTitle("Main Window")
 
 		self.selectionGroup = QGroupBox("Selection")
@@ -248,8 +145,8 @@ class MainWindow(QWidget):
 		self.topLeftLayout = QHBoxLayout()
 		self.outputsLayout = QHBoxLayout()
 
-		for x in range(maxRange):
-			for y in range(maxRange):
+		for x in range(settings.maxRange):
+			for y in range(settings.maxRange):
 				checkBox = QCheckBox()
 				self.selectionGridLayout.addWidget(checkBox, x, y)
 				self.pathGridLayout.addWidget(QLabel('_'),x,y)
@@ -280,9 +177,9 @@ class MainWindow(QWidget):
 		label_SY = QLabel("Start_Y:")
 		self.input_SY = QLineEdit('0')
 		label_EX = QLabel("End_X:")
-		self.input_EX = QLineEdit(str(maxRange-1))
+		self.input_EX = QLineEdit(str(settings.maxRange-1))
 		label_EY = QLabel("End_Y:")
-		self.input_EY = QLineEdit(str(maxRange-1))
+		self.input_EY = QLineEdit(str(settings.maxRange-1))
 		self.topLeftLayout.addWidget(label_SX)
 		self.topLeftLayout.addWidget(self.input_SX)
 		self.topLeftLayout.addWidget(label_SY)
@@ -318,10 +215,10 @@ class MainWindow(QWidget):
 		start_y = int(self.input_SY.text())
 		end_x = int(self.input_EX.text())
 		end_y = int(self.input_EY.text())
-		start_x = restrictXY(start_x,0,maxRange-1)
-		start_y = restrictXY(start_y,0,maxRange-1)
-		end_x = restrictXY(end_x,0,maxRange-1)
-		end_y = restrictXY(end_y,0,maxRange-1)
+		start_x = restrictXY(start_x,0,settings.maxRange-1)
+		start_y = restrictXY(start_y,0,settings.maxRange-1)
+		end_x = restrictXY(end_x,0,settings.maxRange-1)
+		end_y = restrictXY(end_y,0,settings.maxRange-1)
 		self.input_SX.setText(str(start_x))
 		self.input_SY.setText(str(start_y)) 
 		self.input_EX.setText(str(end_x))
@@ -353,22 +250,22 @@ class MainWindow(QWidget):
 		self.robot1 = robot(self.start.toTuple(), 'N')
 
 	def update(self):
-		blocked.clear()
+		settings.blocked.clear()
 		if not self.update_btn.isChecked():
-			for x in range(maxRange):
-				for y in range(maxRange):
+			for x in range(settings.maxRange):
+				for y in range(settings.maxRange):
 					self.pathGridLayout.itemAtPosition(x,y).widget().setText("_")
 					if (x,y) !=  self.start.toTuple() and (x,y) != self.end.toTuple():
 						widget = self.selectionGridLayout.itemAtPosition(x,y)
 						chckbx = widget.widget()
 						if chckbx.isChecked():
-							blocked.append((x,y))
+							settings.blocked.append((x,y))
 
-		path.clear()
-		for point in blocked:
+		settings.path.clear()
+		for point in settings.blocked:
 			self.pathGridLayout.itemAtPosition(point[0],point[1]).widget().setText("X")
 
-		path.append(self.robot1.pose.__copy__())
+		settings.path.append(self.robot1.pose.__copy__())
 
 		while 1:
 			self.robot1.move(self.end)
@@ -379,23 +276,9 @@ class MainWindow(QWidget):
 			if self.robot1.distance > int(self.maxDistance.text()):
 				string = "{:.1f}".format(self.robot1.distance)
 				self.distance.setText("Max. distance reached: "+ string)
-				'''
-				print(" ====== ====== ======")
-				print(" MAX DISTANCE REACHED")
-				print(" ====== ====== ======")
-				'''
 				break
-		'''
-		print(" ====== ====== ======")
-		print("Distance = " + str(round(self.robot1.distance)))
-		
-		print("Followed path: ")
-		for p in path:
-			p.print(log=True)
-		
-		print(" ====== ====== ======")
-		'''
-		for i,point in enumerate(path):
+
+		for i,point in enumerate(settings.path):
 			if(self.pathGridLayout.itemAtPosition(point.position.x,point.position.y) is not None):
 				self.pathGridLayout.itemAtPosition(point.position.x,point.position.y).widget().setText(str(i))
 
@@ -403,8 +286,8 @@ class MainWindow(QWidget):
 			self.robot1 = robot(self.start.toTuple(), 'N')
 
 	def reset(self):
-		for x in range(maxRange):
-			for y in range(maxRange):
+		for x in range(settings.maxRange):
+			for y in range(settings.maxRange):
 				self.selectionGridLayout.itemAtPosition(x,y).widget().deleteLater()
 				self.pathGridLayout.itemAtPosition(x,y).widget().setText("_")
 				self.selectionGridLayout.addWidget(QCheckBox(), x, y)
@@ -413,7 +296,6 @@ class MainWindow(QWidget):
 
 
 
-			
 
 def restrictXY(val, min, max):
 	if val<min:
@@ -423,32 +305,10 @@ def restrictXY(val, min, max):
 	return val
 
 if __name__ == '__main__':
-	'''
-	start_x = int(input("Select start x: "))
-	start_y = int(input("Select start y: "))
-	start_x = restrictXY(start_x,1,maxRange-1)
-	start_y = restrictXY(start_y,1,maxRange-1)
-	start = position((start_x,start_y))
-	end_x = int(input("Select end x: "))
-	end_y = int(input("Select end y: "))
-	end_x = restrictXY(end_x,1,maxRange-1)
-	end_y = restrictXY(end_y,1,maxRange-1)
-	end = position((end_x,end_y))
-	robot1 = robot(start.toTuple(), 'N')
-	
-	start = position((0,0))
-	end = position((maxRange-1,maxRange-1))
-	robot1 = robot(start.toTuple(), 'N')
-	'''
-
 	app = QApplication(sys.argv)
 	mainwindow = MainWindow()
 	mainwindow.resize(1200, 900)
 	mainwindow.show()
-	#window1 = obstaclesSelectionWindow()
-	#window1.show()
-	#window2 = obstaclesWindow(robot1)
-	#window2.show()
 	sys.exit(app.exec_())
 
 	

@@ -73,8 +73,9 @@ class robot:
 		else:
 			idx = around.index(minimum)
 
+		# Update poses, distances, visited and path
+		# It is recommended to leave it like this
 		self.previous_pose = self.pose.__copy__()
-
 		self.pose.position.x = self.pose.position.x + x_sgn[idx]*settings.resolution
 		self.pose.position.y = self.pose.position.y + y_sgn[idx]*settings.resolution
 		self.pose.orientation = direction[idx]

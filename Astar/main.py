@@ -4,132 +4,14 @@ import math
 import random
 
 import settings
-#settings.init()
 from robot import robot
 from geometry_utils import position, pose
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QPushButton, QApplication, QCheckBox, QLabel, QGroupBox, QHBoxLayout, QLineEdit)
 from PyQt5 import QtCore
 
-'''
-maxRange = 20
-resolution = 1
-borders = []
-path = []
-blocked = []
-'''
-for i in range(-1,settings.maxRange):
-	settings.borders.append((-settings.resolution, i*settings.resolution))
-for i in range(-1,settings.maxRange):
-	settings.borders.append(((settings.maxRange)*settings.resolution, i*settings.resolution))
-for i in range(-1,settings.maxRange):
-	settings.borders.append((i*settings.resolution, -settings.resolution))
-for i in range(-1,settings.maxRange):
-	settings.borders.append((i*settings.resolution, (settings.maxRange)*settings.resolution))
-
-
-'''
-class position:
-	def __init__(self,pos):
-		self.x = pos[0]
-		self.y = pos[1]
-
-	def print(self):
-		print(str(self.x) + " " + str(self.y))
-
-	def toTuple(self):
-		return (self.x, self.y)
-
-class pose:
-	def __init__(self, pos, orientation):
-		self.position = position(pos)
-		self.orientation = orientation
-
-	def print(self, log):
-		if log:
-			print(str(self.position.x) + " " + str(self.position.y) + " " + str(self.orientation))
-		else:
-			return str(self.position.x) + " " + str(self.position.y) + " " + str(self.orientation)
-
-	def __copy__(self):
-		self.normalizeArgs()
-		return pose((self.position.x, self.position.y), self.orientation)
-
-	def normalizeArgs(self):
-		if not hasattr(self, "position"):
-			self.position = None
-		if not hasattr(self, "orientation"):
-			self.orientation = None
-
-class robot:
-	def __init__(self, position, orientation):
-		self.pose = pose(position, orientation)
-		self.distance = 0
-		self.visited = []
-		self.visited.append(self.pose.position.toTuple())
-		self.last_bisection = None
-		self.previous_pose = self.pose
-
-	def printPoseAndDistance(self):
-		print(self.pose.print(log=False) +" "+ str(round(self.distance)))
-
-	def move(self, goal):
-		#print(blocked)
-		dist2robot = [resolution, math.sqrt(2)*resolution]
-		x_sgn = [0, 1, 1, 1, 0, -1, -1, -1]
-		y_sgn = [1, 1, 0, -1, -1, -1, 0, 1]
-		direction = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
-		
-		around = [0, 0, 0, 0, 0, 0, 0, 0]
-		check = position((0,0))
-		for i in range(8):
-			check.x = self.pose.position.x + x_sgn[i] * resolution
-			check.y = self.pose.position.y + y_sgn[i] * resolution
-			check2 = check.toTuple()
-			if check2 in self.visited:
-				penalizacion = self.visited.count(check2)*resolution*5
-			else:
-				penalizacion = 0
-			if check2 not in blocked and check2 not in borders:
-				around[i] = dist2robot[i%2] + math.sqrt(pow(check.x-goal.x,2)+pow(check.y-goal.y,2)) + penalizacion
-			else:
-				around[i] = float("inf")
-			for i in (0, 2, 4, 6):
-				if i == 6:
-					j = 0
-				else: 
-					j = i+2
-				if around[i] == float("inf") and around[(j)] == float("inf"):
-					around[i+1] = float("inf")
-		
-		minimum = float("inf")	
-		for a in around:
-			if a < minimum and a != float("inf"):
-				minimum = a
-
-		if around.count(minimum) > 1:
-			min_idx = [i for i, value in enumerate(around) if value == minimum]
-			idx = min_idx[random.randint(0,1)]
-			self.last_bisection = self.pose.position
-		else:
-			idx = around.index(minimum)
-
-		self.previous_pose = self.pose.__copy__()
-
-		self.pose.position.x = self.pose.position.x + x_sgn[idx]*resolution
-		self.pose.position.y = self.pose.position.y + y_sgn[idx]*resolution
-		self.pose.orientation = direction[idx]
-		self.distance = self.distance + dist2robot[idx%2]
-		#self.printPoseAndDistance()
-		self.visited.append(self.pose.position.toTuple())
-		path.append(self.pose.__copy__())
-		#return(self.pose.__copy__())
-'''
-
-
 class MainWindow(QWidget):
 	def __init__(self):
 		super().__init__()
-		
 
 		self.setWindowTitle("Main Window")
 
@@ -293,8 +175,6 @@ class MainWindow(QWidget):
 				self.selectionGridLayout.addWidget(QCheckBox(), x, y)
 		self.start = None
 		self.end = None
-
-
 
 
 def restrictXY(val, min, max):
